@@ -37,7 +37,7 @@ public class Direction {
         }
     }
 
-    private String turnLeft(String direction) {
+     private String turnLeft(String direction) {
         switch (direction) {
             case "NORTH": return "WEST";
             case "EAST": return "NORTH";
@@ -107,16 +107,107 @@ public class Direction {
         return end;
     }
 
+//     public List<Character> rightHandRuleAlgorithm() {
+//         if (start == null || end == null) {
+//             throw new IllegalStateException("No start nor end position");
+//         }
+
+//         // Initialize position and direction
+//         int row = start[0];
+//         int column = start[1];
+//         String direction = "EAST";  // You can choose any starting direction
+//         traversed[row][column] = true;
+
+//         logger.info("Starting pathfinding at position: (" + row + ", " + column + "), direction: " + direction);
+
+//         while (true) {
+//             logger.info("At position: (" + row + ", " + column + "), direction: " + direction);
+
+//             // Check if we have reached the end
+//             if (row == end[0] && column == end[1]) {
+//                 logger.info("Reached the end!");
+//                 break;
+//             }
+
+//             // Try to move forward
+//             int[] newPosition = attemptMove(row, column, direction);
+//             if (newPosition != null) {
+//                 row = newPosition[0];
+//                 column = newPosition[1];
+//                 path.add('F');  // Move forward
+//                 logger.info("Moved forward to: (" + row + ", " + column + ")");
+//                 continue;
+//             }
+
+//             // If moving forward fails, try turning right and then moving forward
+//             String nextDirection = turnRight(direction);
+//             newPosition = attemptMove(row, column, nextDirection);
+//             if (newPosition != null) {
+//                 row = newPosition[0];
+//                 column = newPosition[1];
+//                 direction = nextDirection;
+//                 path.add('R');  // Turn right
+//                 path.add('F');  // Move forward
+//                 logger.info("Turned right to: (" + row + ", " + column + "), direction: " + direction);
+//                 continue;
+//             }
+
+//             // If moving right fails, try turning left and then move forward
+//             nextDirection = turnLeft(direction);
+//             newPosition = attemptMove(row, column, nextDirection);
+//             if (newPosition != null) {
+//                 row = newPosition[0];
+//                 column = newPosition[1];
+//                 direction = nextDirection;
+//                 path.add('L');  // Turn left
+//                 path.add('F');  // Move forward
+//                 logger.info("Turned left to: (" + row + ", " + column + "), direction: " + direction);
+//                 continue;
+//             }
+
+//             // If all moves fail, we are stuck (should not happen in a valid maze)
+//             logger.error("Stuck in the maze, no valid moves!");
+//             throw new IllegalStateException("Stuck in the maze, no valid moves!");
+//         }
+
+//         return path;
+//     }
+
+//     // Helper method to attempt a move and return the new position if successful
+//     private int[] attemptMove(int row, int column, String direction) {
+//         int newRow = row;
+//         int newColumn = column;
+
+//         if (direction.equals("NORTH")) {
+//             newRow -= 1;
+//         } 
+//         else if (direction.equals("EAST")) {
+//             newColumn += 1;
+//         } 
+//         else if (direction.equals("SOUTH")) {
+//             newRow += 1;
+//         } 
+//         else if (direction.equals("WEST")) {
+//             newColumn -= 1;
+//         }
+
+//         logger.info("Trying to move " + direction + " to (" + newRow + ", " + newColumn + ")");
+//         if (canMove(newRow, newColumn)) {
+//             traversed[newRow][newColumn] = true;
+//             return new int[]{newRow, newColumn};
+//         }
+//         return null; // Move not possible
+//     }
+// }
     public List<Character> rightHandRuleAlgorithm() {
         if (start == null || end == null) {
-            throw new IllegalStateException("No start nor end position");
+            throw new IllegalStateException("No start or end position.");
         }
 
         // Initialize position and direction
         int row = start[0];
         int column = start[1];
-        String direction = "EAST";  // You can choose any starting direction
-        traversed[row][column] = true;
+        String direction = "EAST"; // Starting direction
 
         logger.info("Starting pathfinding at position: (" + row + ", " + column + "), direction: " + direction);
 
@@ -129,77 +220,61 @@ public class Direction {
                 break;
             }
 
-            // Try to move forward
-            int[] newPosition = attemptMove(row, column, direction);
-            if (newPosition != null) {
-                row = newPosition[0];
-                column = newPosition[1];
-                path.add('F');  // Move forward
-                logger.info("Moved forward to: (" + row + ", " + column + ")");
-                continue;
-            }
+            // Check the position to the right of the current direction
+            String rightDirection = turnRight(direction);
+            int[] rightPosition = attemptMove(row, column, rightDirection);
 
-            // If moving forward fails, try turning right and then moving forward
-            String nextDirection = turnRight(direction);
-            newPosition = attemptMove(row, column, nextDirection);
-            if (newPosition != null) {
-                row = newPosition[0];
-                column = newPosition[1];
-                direction = nextDirection;
-                path.add('R');  // Turn right
-                path.add('F');  // Move forward
-                logger.info("Turned right to: (" + row + ", " + column + "), direction: " + direction);
-                continue;
-            }
+            if (rightPosition != null) {
+                // If the space to the right is free, turn right and move forward
+                direction = rightDirection;
+                row = rightPosition[0];
+                column = rightPosition[1];
+                path.add('R'); // Turn right
+                path.add('F'); // Move forward
+                logger.info("Turned right and moved to: (" + row + ", " + column + "), direction: " + direction);
+            } else {
+                // If the space to the right is blocked, try to move forward
+                int[] forwardPosition = attemptMove(row, column, direction);
 
-            // If moving right fails, try turning left and then move forward
-            nextDirection = turnLeft(direction);
-            newPosition = attemptMove(row, column, nextDirection);
-            if (newPosition != null) {
-                row = newPosition[0];
-                column = newPosition[1];
-                direction = nextDirection;
-                path.add('L');  // Turn left
-                path.add('F');  // Move forward
-                logger.info("Turned left to: (" + row + ", " + column + "), direction: " + direction);
-                continue;
+                if (forwardPosition != null) {
+                    row = forwardPosition[0];
+                    column = forwardPosition[1];
+                    path.add('F'); // Move forward
+                    logger.info("Moved forward to: (" + row + ", " + column + ")");
+                } else {
+                    // If forward is also blocked, turn left
+                    direction = turnLeft(direction);
+                    path.add('L'); // Turn left
+                    logger.info("Turned left to face: " + direction);
+                }
             }
-
-            // If all moves fail, we are stuck (should not happen in a valid maze)
-            logger.error("Stuck in the maze, no valid moves!");
-            throw new IllegalStateException("Stuck in the maze, no valid moves!");
         }
 
         return path;
     }
 
-    // Helper method to attempt a move and return the new position if successful
+// Helper method to attempt a move and return the new position if successful
     private int[] attemptMove(int row, int column, String direction) {
         int newRow = row;
         int newColumn = column;
 
         if (direction.equals("NORTH")) {
             newRow -= 1;
-        } 
-        else if (direction.equals("EAST")) {
+        } else if (direction.equals("EAST")) {
             newColumn += 1;
-        } 
-        else if (direction.equals("SOUTH")) {
+        } else if (direction.equals("SOUTH")) {
             newRow += 1;
-        } 
-        else if (direction.equals("WEST")) {
+        } else if (direction.equals("WEST")) {
             newColumn -= 1;
         }
 
         logger.info("Trying to move " + direction + " to (" + newRow + ", " + newColumn + ")");
         if (canMove(newRow, newColumn)) {
-            traversed[newRow][newColumn] = true;
             return new int[]{newRow, newColumn};
         }
         return null; // Move not possible
     }
 }
-
 
 
     // public String factorizePath(List<Character> canonicalPath) {
