@@ -23,6 +23,7 @@ public class Main {
         CommandLineParser parser = new DefaultParser();
         
         options.addOption("i", true, "Proper Input Required");
+        options.addOption("p", true, "Path Verfication Required");
 
         int rows = 0;
         int columns = 0;
@@ -83,21 +84,28 @@ public class Main {
         if (maze.getRows() == 0 || maze.getColumns() == 0) {
             throw new IllegalStateException("Maze is empty or invalid.");
         }
-
-        logger.info("**** Computing path");
-
-        List<Character> pathFound = solver.rightHandRuleAlgorithm();
-        StringBuilder pathString = new StringBuilder();
-        for (Character c : pathFound) {
-            pathString.append(c);  // Append each character to the string
-        }
-        
-
-        if (pathFound.isEmpty()) {
-            logger.warn("PATH NOT COMPUTED");
+        if (args.length > 2 && args[2].equals("-p")) {
+            String pathToVerify = args[3];
+            boolean isValid = solver.verifyPath(pathToVerify);
+            System.out.println("Path verification result: " + (isValid ? "Valid" : "Invalid"));
         } 
-        else {
-            System.out.println("Canonical Path: " + pathString.toString());
+        else{
+            logger.info("**** Computing path");
+
+            List<Character> pathFound = solver.rightHandRuleAlgorithm();
+            StringBuilder pathString = new StringBuilder();
+            for (Character c : pathFound) {
+                pathString.append(c);  // Append each character to the string
+            }
+            
+
+            if (pathFound.isEmpty()) {
+                logger.warn("PATH NOT COMPUTED");
+            } 
+            else {
+                System.out.println("Canonical Path: " + pathString.toString());
+                System.out.println("Factorized Path: " + solver.toFactorizedPath(pathFound));
+            }
         }
 
         logger.info("** End of MazeRunner");

@@ -3,8 +3,6 @@ package ca.mcmaster.se2aa4.mazerunner;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.util.List;
-import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -181,5 +179,54 @@ public class Direction {
             return new int[]{newRow, newColumn};
         }
         return null; // Move not possible
+    }
+
+    public String toFactorizedPath(List<Character> canonicalPath) {
+        String factorizedPath = "";
+        int counter = 1;
+
+        for (int i = 1; i < canonicalPath.size(); i++) {
+            if (canonicalPath.get(i) == canonicalPath.get(i - 1)) {
+                counter++;
+            } else {
+                if (counter > 1) {
+                    factorizedPath += counter;
+                }
+                factorizedPath += canonicalPath.get(i - 1);
+                counter = 1;
+            }
+        }
+
+        // Append the last group
+        if (counter > 1) {
+            factorizedPath += counter;
+        }
+        factorizedPath += canonicalPath.get(canonicalPath.size() - 1);
+        
+        return factorizedPath;
+    }
+
+    public boolean verifyPath(String path) {
+        int row = start[0];
+        int column = start[1];
+        String direction = "EAST";
+
+        for (char move : path.toCharArray()) {
+            if (move == 'F') {
+                int[] newPosition = attemptMove(row, column, direction);
+                if (newPosition == null) {
+                    return false; // Invalid move
+                }
+                row = newPosition[0];
+                column = newPosition[1];
+            } else if (move == 'R') {
+                direction = turnRight(direction);
+            } else if (move == 'L') {
+                direction = turnLeft(direction);
+            } else {
+                return false; // Invalid character in path
+            }
+        }
+        return row == end[0] && column == end[1]; // True if it reaches the exit
     }
 }
