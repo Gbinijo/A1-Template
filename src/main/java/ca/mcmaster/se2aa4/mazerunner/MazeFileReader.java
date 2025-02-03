@@ -11,8 +11,9 @@ import java.util.ArrayList;
 
 import java.io.IOException;
 
-public class MazeFileReader {
-    public static Maze readMaze(String filePath) throws IOException {
+public class MazeFileReader implements InputReader{
+    @Override
+    public Maze readMaze(String filePath) throws IOException {
         List<String> lines = new ArrayList<>();
         int rows = 0;
         int columns = 0;

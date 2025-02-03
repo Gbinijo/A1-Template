@@ -28,7 +28,8 @@ public class Main {
         }
 
         try {
-            Maze maze = MazeFileReader.readMaze(filePath);
+            InputReader reader = new MazeFileReader();
+            Maze maze = reader.readMaze(cli.getInputFile());
             Direction solver = new Direction(maze);
 
             if (pathToVerify != null) {
@@ -55,7 +56,8 @@ public class Main {
                     System.out.println("Factorized Path: " + solver.toFactorizedPath(pathFound));
                 }
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             logger.error("Error processing maze file.", e);
         }
 

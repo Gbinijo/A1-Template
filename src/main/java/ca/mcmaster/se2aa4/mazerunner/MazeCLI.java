@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.ArrayList;
 
-public class MazeCLI {
+public class MazeCLI implements CLIHandler {
     private String inputFile;
     private String pathToVerify;
 
@@ -35,10 +35,13 @@ public class MazeCLI {
             System.err.println("Error parsing command line arguments: " + e.getMessage());
         }
     }
+
+    @Override
     public String getInputFile() {
         return inputFile;
     }
 
+    @Override
     public String getPathToVerify() {
         return pathToVerify;
     }
