@@ -85,7 +85,55 @@ class MovementHandler {
     }
 
     public boolean verifyPath(int[] start, int[] end, String path) {
-        return true;
+        int row = start[0];
+        int column = start[1];
+        String direction = "EAST"; // Assuming EAST as the initial direction
+
+        // Convert factorized path (e.g., "4F" -> "FFFF", "3R2F" -> "RRRFF")
+        String expandedPath = expandFactorizedPath(path);
+
+        for (char move : expandedPath.toCharArray()) {
+            switch (move) {
+                case 'F': // Move forward
+                    int[] newPos = attemptMove(row, column, direction, new boolean[maze.getRows()][maze.getColumns()]);
+                    if (newPos == null) {
+                        return false; // Invalid move
+                    }
+                    row = newPos[0];
+                    column = newPos[1];
+                    break;
+                case 'R': // Turn right
+                    direction = turnRight(direction);
+                    break;
+                case 'L': // Turn left
+                    direction = turnLeft(direction);
+                    break;
+                default:
+                    return false; // Invalid character in path
+            }
+        }
+
+        // Ensure the final position matches the expected end position
+        return row == end[0] && column == end[1];
+    }
+
+    private String expandFactorizedPath(String path) {
+        StringBuilder expanded = new StringBuilder();
+        StringBuilder numBuffer = new StringBuilder();
+
+        for (char c : path.toCharArray()) {
+            if (Character.isDigit(c)) {
+                numBuffer.append(c); // Accumulate digits
+            } else {
+                int repeat = numBuffer.length() > 0 ? Integer.parseInt(numBuffer.toString()) : 1;
+                for (int i = 0; i < repeat; i++) {
+                    expanded.append(c);
+                }
+                numBuffer.setLength(0); // Reset buffer
+            }
+        }
+
+        return expanded.toString();
     }
 
     public String toFactorizedPath(List<Character> canonicalPath) {
