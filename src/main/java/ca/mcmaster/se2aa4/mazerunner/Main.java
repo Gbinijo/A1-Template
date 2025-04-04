@@ -29,35 +29,20 @@ public class Main {
 
         try {
             InputReader reader = new MazeFileReader();
-            Maze maze = reader.readMaze(cli.getInputFile());
+            Maze maze = reader.readMaze(filePath);
             Direction solver = new Direction(maze);
 
+            Command command;
+
             if (pathToVerify != null) {
-                boolean isValid = solver.verifyPath(pathToVerify);
-                if (isValid) {
-                    System.out.println("Path verification result: Valid");
-                } 
-                else {
-                    System.out.println("Path verification result: Invalid");
-                }
-            } 
-            else {
-                logger.info("**** Computing path");
-                List<Character> pathFound = solver.rightHandRuleAlgorithm();
-                if (pathFound.isEmpty()) {
-                    logger.warn("PATH NOT COMPUTED");
-                } 
-                else {
-                    StringBuilder canonicalPath = new StringBuilder();
-                    for (Character c : pathFound) {
-                        canonicalPath.append(c);
-                    }
-                    System.out.println("Canonical Path: " + canonicalPath.toString());
-                    System.out.println("Factorized Path: " + solver.toFactorizedPath(pathFound));
-                }
+                command = new VerifyPathCommand(solver, pathToVerify);
+            } else {
+                command = new SolveMazeCommand(solver);
             }
-        } 
-        catch (Exception e) {
+
+            command.execute();
+
+        } catch (Exception e) {
             logger.error("Error processing maze file.", e);
         }
 

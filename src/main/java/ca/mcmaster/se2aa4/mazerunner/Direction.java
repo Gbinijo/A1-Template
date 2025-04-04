@@ -1,8 +1,6 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
 import java.util.List;
-import java.util.ArrayList;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,5 +25,9 @@ public class Direction implements MazeSolver {
     @Override
     public String toFactorizedPath(List<Character> canonicalPath) {
         return navigator.toFactorizedPath(canonicalPath);
+    }
+
+    public MazeNavigator getNavigator() {
+        return this.navigator;
     }
 }
