@@ -30,16 +30,8 @@ public class Main {
         try {
             InputReader reader = new MazeFileReader();
             Maze maze = reader.readMaze(filePath);
-            Direction solver = new Direction(maze);
 
-            Command command;
-
-            if (pathToVerify != null) {
-                command = new VerifyPathCommand(solver, pathToVerify);
-            } else {
-                command = new SolveMazeCommand(solver);
-            }
-
+            Command command = CmdFactory.createCommand(pathToVerify, maze);
             command.execute();
 
         } catch (Exception e) {
